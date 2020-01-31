@@ -2,7 +2,8 @@
 # https://www.advancedclustering.com/act_kb/installing-nvidia-drivers-rhel-centos-7/
 
 step_0() {
-	printf 'Prepare your machine\n'
+	read -p "Basic package update and install. Continue? [Y/N]" -sn1 CHOICE
+	[ ${CHOICE^^} == 'N' ] && return 0
 	sudo yum -y update
 	sudo yum -y yum -y groupinstall "GNOME Desktop" "Development Tools"
 	sudo yum -y yum -y install kernel-devel
@@ -13,22 +14,27 @@ step_1() {
 	if [ ${CHOICE^^} == 'Y' ]
 	then
 		sudo yum -y install epel-release
-		sudo yum -y yum -y install dkms
+		sudo yum -y install dkms
 	fi
 	printf '\n\nReboot your machine to make sure you are running the newest kernel\n'
 }
 
 step_2() {
+	read -p "Blacklist nouveau. Continue? [Y/N]" -sn1 CHOICE
+	[ ${CHOICE^^} == 'N' ] && return 0
 	printf 'Edit /etc/default/grub Append the following to "GRUB_CMDLINE_LINUX":
 	\trd.driver.blacklist=nouveau nouveau.modeset=0\n'
-	sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="rd.driver.blacklist=nouveau nouveau.modeset=0 /' /etc/default/grub
+	sudo sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="rd.driver.blacklist=nouveau nouveau.modeset=0 /' /etc/default/grub
 
 	printf 'Generate a new grub configuration to include the above changes.\n'
 	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 	printf 'Edit/create /etc/modprobe.d/blacklist.conf and append:
-	blacklist nouveau\n'
-	sudo echo 'blacklist nouveau' > /etc/modprobe.d/blacklist.conf
+	blacklist nouveau
+	options nouveau modeset=0\n'
+	echo 'blacklist nouveau' > blacklist.conf
+	echo 'blacklist nouveau' >> blacklist.conf
+	sudo mv blacklist.conf /etc/modprobe.d/blacklist.conf
 
 	printf 'Backup your old initramfs and then build a new one\n'
 	sudo mv /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r)-nouveau.img
@@ -38,6 +44,9 @@ step_2() {
 }
 
 step_3() {
+	read -p "Run Nvidia driver installer (runfile). Continue? [Y/N]" -sn1 CHOICE
+	[ ${CHOICE^^} == 'N' ] && return 0
+
 	printf '\nDownloading NVIDIA-Linux-x86_64-440.44.run\n'
 	wget 'http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run'
 
@@ -51,6 +60,9 @@ step_3() {
 }
 
 step_4() {
+	read -p "Optional: Install NVIDIA's CUDA Toolkit. Continue? [Y/N]" -sn1 CHOICE
+	[ ${CHOICE^^} == 'N' ] && return 0
+
 	printf 'Downloading cuda_10.2.89_440.33.01_linux.run'
 	wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
 
@@ -100,32 +112,22 @@ main() {
 
 	case "$1" in
 	"0")
-		read -p "Basic package update and install. Continue? [Y/N]" read -sn1 CHOICE
-		[ ${CHOICE^^} == 'N' ] && return 0
 		step_0
 		;;
 	"1")
-		read -p "Optional: Future-proofing step. Continue? [Y/N]" read -sn1 CHOICE
-		[ ${CHOICE^^} == 'N' ] && return 0
 		step_1
 		;;
 	"2")
-		read -p "Blacklist nouveau. Continue? [Y/N]" read -sn1 CHOICE
-		[ ${CHOICE^^} == 'N' ] && return 0
 		step_2
 		;;
 	"3")
-		read -p "Run Nvidia driver installer (runfile). Continue? [Y/N]" read -sn1 CHOICE
-		[ ${CHOICE^^} == 'N' ] && return 0
 		step_3
 		;;
 	"4")
-		read -p "Optional: Install NVIDIA's CUDA Toolkit. Continue? [Y/N]" read -sn1 CHOICE
-		[ ${CHOICE^^} == 'N' ] && return 0
 		step_4
 		;;
 	"a" | "A")
-		read -p "Complete all steps in super-fast dont care MODE? [Y/N]" read -sn1 CHOICE
+		read -p "Complete all steps in super-fast dont care MODE? [Y/N]" -sn1 CHOICE
 		[ ${CHOICE^^} == 'N' ] && return 0
 		step_0
 		step_1
