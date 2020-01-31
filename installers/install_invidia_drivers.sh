@@ -52,14 +52,19 @@ step_3() {
 
 	printf '\nThe NVIDIA installer will not run while X is running so switch to text mode:\n'
 	sudo systemctl set-default multi-user.target
+	printf 'Reboot now to boot into text mode (No X enabled) \n'
+}
 
+step_4() {
+	read -p "Actually run the NVIDIO installer: Continue? [Y/N]" -sn1 CHOICE
+	[ ${CHOICE^^} == 'N' ] && return 0
 	printf '\nRun the NVIDIA driver installer and enter yes to all options.\n'
 	sudo sh NVIDIA-Linux-x86_64-*.run
 
 	printf '\nReboot your machine\n'
 }
 
-step_4() {
+step_5() {
 	read -p "Optional: Install NVIDIA's CUDA Toolkit. Continue? [Y/N]" -sn1 CHOICE
 	[ ${CHOICE^^} == 'N' ] && return 0
 
@@ -125,6 +130,9 @@ main() {
 		;;
 	"4")
 		step_4
+		;;
+	"5")
+		step_5
 		;;
 	"a" | "A")
 		read -p "Complete all steps in super-fast dont care MODE? [Y/N]" -sn1 CHOICE
