@@ -6,7 +6,7 @@ step_0() {
 	[ ${CHOICE^^} == 'N' ] && return 0
 	sudo yum -y update
 	sudo yum -y yum -y groupinstall "GNOME Desktop" "Development Tools"
-	sudo yum -y yum -y install kernel-devel
+	sudo yum -y yum -y install kernel-devel kernel-headers gcc acpid
 }
 
 step_1() {
@@ -22,6 +22,14 @@ step_1() {
 step_2() {
 	read -p "Blacklist nouveau. Continue? [Y/N]" -sn1 CHOICE
 	[ ${CHOICE^^} == 'N' ] && return 0
+
+	printf 'Edit/create /etc/modprobe.d/blacklist.conf and append:
+	blacklist nouveau
+	options nouveau modeset=0\n'
+	echo 'blacklist nouveau' > blacklist.conf
+	echo 'options nouveau modeset=0' >> blacklist.conf
+	sudo mv blacklist.conf /etc/modprobe.d/blacklist.conf
+
 	printf 'Edit /etc/default/grub Append the following to "GRUB_CMDLINE_LINUX":
 	\trd.driver.blacklist=nouveau nouveau.modeset=0\n'
 	sudo sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="rd.driver.blacklist=nouveau nouveau.modeset=0 /' /etc/default/grub
@@ -29,12 +37,6 @@ step_2() {
 	printf 'Generate a new grub configuration to include the above changes.\n'
 	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
-	printf 'Edit/create /etc/modprobe.d/blacklist.conf and append:
-	blacklist nouveau
-	options nouveau modeset=0\n'
-	echo 'blacklist nouveau' > blacklist.conf
-	echo 'blacklist nouveau' >> blacklist.conf
-	sudo mv blacklist.conf /etc/modprobe.d/blacklist.conf
 
 	printf 'Backup your old initramfs and then build a new one\n'
 	sudo mv /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r)-nouveau.img
@@ -59,7 +61,8 @@ step_4() {
 	read -p "Actually run the NVIDIA installer: Continue? [Y/N]" -sn1 CHOICE
 	[ ${CHOICE^^} == 'N' ] && return 0
 	printf '\nRun the NVIDIA driver installer and enter yes to all options.\n'
-	sudo sh NVIDIA-Linux-x86_64-*.run
+	chmod +x ./NVIDIA-Linux-$(uname -m)-*.run
+	sudo ./NVIDIA-Linux-$(uname -m)-*.run
 
 	printf '\nReboot your machine to return to graphical.target\n'
 	sudo systemctl set-default graphical.target
