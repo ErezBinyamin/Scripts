@@ -3,17 +3,17 @@
 
 step_0() {
 	printf 'Prepare your machine\n'
-	yum -y update
-	yum -y groupinstall "GNOME Desktop" "Development Tools"
-	yum -y install kernel-devel
+	sudo yum -y update
+	sudo yum -y yum -y groupinstall "GNOME Desktop" "Development Tools"
+	sudo yum -y yum -y install kernel-devel
 }
 
 step_1() {
 	read -p "In order to have the NVIDIA drivers rebuilt automatically with future kernel updates you can also install the EPEL repository and the DKMS package. This is optional. Install? [Y/N]: " -sn1 CHOICE
 	if [ ${CHOICE^^} == 'Y' ]
 	then
-		yum -y install epel-release
-		yum -y install dkms
+		sudo yum -y install epel-release
+		sudo yum -y yum -y install dkms
 	fi
 	printf '\n\nReboot your machine to make sure you are running the newest kernel\n'
 }
@@ -24,15 +24,15 @@ step_2() {
 	sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="rd.driver.blacklist=nouveau nouveau.modeset=0 /' /etc/default/grub
 
 	printf 'Generate a new grub configuration to include the above changes.\n'
-	grub2-mkconfig -o /boot/grub2/grub.cfg
+	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 	printf 'Edit/create /etc/modprobe.d/blacklist.conf and append:
 	blacklist nouveau\n'
-	echo 'blacklist nouveau' > /etc/modprobe.d/blacklist.conf
+	sudo echo 'blacklist nouveau' > /etc/modprobe.d/blacklist.conf
 
 	printf 'Backup your old initramfs and then build a new one\n'
-	mv /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r)-nouveau.img
-	dracut /boot/initramfs-$(uname -r).img $(uname -r)
+	sudo mv /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r)-nouveau.img
+	sudo dracut /boot/initramfs-$(uname -r).img $(uname -r)
 
 	printf 'Reboot your machine\n'
 }
@@ -42,10 +42,10 @@ step_3() {
 	wget 'http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run'
 
 	printf '\nThe NVIDIA installer will not run while X is running so switch to text mode:\n'
-	systemctl set-default multi-user.target
+	sudo systemctl set-default multi-user.target
 
 	printf '\nRun the NVIDIA driver installer and enter yes to all options.\n'
-	sh NVIDIA-Linux-x86_64-*.run
+	sudo sh NVIDIA-Linux-x86_64-*.run
 
 	printf '\nReboot your machine\n'
 }
@@ -58,22 +58,22 @@ step_4() {
 	printf 'Say no to installing the NVIDIA driver. The standalone driver you already installed is typically newer than what is packaged with CUDA. Use the default option for all other choices.'
 	printf '\n\nSetting up ...'
 	sleep 2
-	sh cuda_*.run
+	sudo sh cuda_*.run
 
 	printf 'Create /etc/profile.d/cuda.sh\n'
-	touch /etc/profile.d/cuda.sh
+	sudo touch /etc/profile.d/cuda.sh
 	PATH=$PATH:/usr/local/cuda/bin
 	export PATH
 
 	printf 'Create /etc/profile.d/cuda.csh\n'
-	touch /etc/profile.d/cuda.csh
+	sudo touch /etc/profile.d/cuda.csh
 	set path = "$path /usr/local/cuda/bin"
 
 	printf 'Create /etc/ld.so.conf.d/cuda.conf\n'
-	touch /etc/ld.so.conf.d/cuda.conf
-	/usr/local/cuda/lib64
+	sudo touch /etc/ld.so.conf.d/cuda.conf
+	sudo /usr/local/cuda/lib64
 
-	systemctl set-default graphical.target
+	sudo systemctl set-default graphical.target
 }
 
 usage() {
@@ -89,11 +89,12 @@ usage() {
 }
 # -- MAIN --
 main() {
-	if [ "$EUID" -ne 0 ]
-	then
-		echo "Please run as root"
-		return 1
-	fi
+	# ROOT CHECKS
+	# if [ "$EUID" -ne 0 ]
+	# then
+	# 	echo "Please run as root"
+	# 	return 1
+	# fi
 
 	[ -z ${1+x} ] && usage && return 1
 
