@@ -39,11 +39,9 @@ step_2() {
 
 step_3() {
 	printf '\nDownloading NVIDIA-Linux-x86_64-440.44.run\n'
-	curl 'http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run' > NVIDIA-Linux-x86_64-440.44.run
+	wget 'http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run'
 
 	printf '\nThe NVIDIA installer will not run while X is running so switch to text mode:\n'
-	# BAD WAY OF DOING THIS
-	# systemctl isolate multi-user.target
 	systemctl set-default multi-user.target
 
 	printf '\nRun the NVIDIA driver installer and enter yes to all options.\n'
