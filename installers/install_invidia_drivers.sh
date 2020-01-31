@@ -56,12 +56,13 @@ step_3() {
 }
 
 step_4() {
-	read -p "Actually run the NVIDIO installer: Continue? [Y/N]" -sn1 CHOICE
+	read -p "Actually run the NVIDIA installer: Continue? [Y/N]" -sn1 CHOICE
 	[ ${CHOICE^^} == 'N' ] && return 0
 	printf '\nRun the NVIDIA driver installer and enter yes to all options.\n'
 	sudo sh NVIDIA-Linux-x86_64-*.run
 
-	printf '\nReboot your machine\n'
+	printf '\nReboot your machine to return to graphical.target\n'
+	sudo systemctl set-default graphical.target
 }
 
 step_5() {
@@ -89,8 +90,6 @@ step_5() {
 	printf 'Create /etc/ld.so.conf.d/cuda.conf\n'
 	sudo touch /etc/ld.so.conf.d/cuda.conf
 	sudo /usr/local/cuda/lib64
-
-	sudo systemctl set-default graphical.target
 }
 
 usage() {
@@ -104,6 +103,7 @@ usage() {
 	"
 	echo " "
 }
+
 # -- MAIN --
 main() {
 	# ROOT CHECKS
