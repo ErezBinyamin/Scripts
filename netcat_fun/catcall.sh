@@ -3,15 +3,20 @@
 # 2. Run catcall_host <PORT> on SERVER
 
 # Server will advertise on PORT
-# Serve audio on PORT+1
-# Serve video on PORT+2
+# Serve audio and video on PORT+1
 catcall_host() (
 	local PORT=${1}
 	nc -l ${PORT} &
 	let PORT++
-	arecord 2>/dev/null | nc -l ${PORT} 2>/dev/null | aplay &>/dev/null &
-	let PORT++
-	ffmpeg -f video4linux2  -i /dev/video0 -vcodec libx264 -b 1000k -f matroska -y /dev/stdout 2>/dev/null | nc -l ${PORT} | mplayer - &>/dev/null
+	ffmpeg \
+		-f alsa -i hw:1 \
+		-acodec flac \
+		-f matroska \
+		-f video4linux2 -i /dev/video0 \
+		-vcodec mpeg4 -b 3000k \
+		-f matroska \
+		-tune zerolatency -y /dev/stdout \
+		 | nc -l ${PORT} | mplayer - &>/dev/null
 )
 
 # When server advertise PORT is up, connect audio and video
@@ -27,7 +32,13 @@ catcall_connect() {
 	done
 	printf '\nCONNECTION ACHIEVED!\n'
 	let PORT++
-	arecord 2>/dev/null | nc ${IP_ADDR} ${PORT} 2>/dev/null | aplay &>/dev/null &
-	let PORT++
-	ffmpeg -f video4linux2  -i /dev/video0 -vcodec libx264 -b 1000k -f matroska -y /dev/stdout 2>/dev/null | nc ${IP_ADDR} ${PORT} | stdbuf -i0 mplayer - &>/dev/null
+	ffmpeg \
+		-f alsa -i hw:1 \
+		-acodec flac \
+		-f matroska \
+		-f video4linux2 -i /dev/video0 \
+		-vcodec mpeg4 -b 3000k \
+		-f matroska \
+		-tune zerolatency -y /dev/stdout \
+		 | nc ${IP_ADDR} ${PORT} | mplayer - &>/dev/null
 }
