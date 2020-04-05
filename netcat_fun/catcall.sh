@@ -6,7 +6,7 @@
 # Serve audio and video on PORT+1
 catcall_host() (
 	local PORT=${1}
-	nc -l ${PORT} &
+	nc -l ${PORT}
 	let PORT++
 	ffmpeg \
 		-f alsa -i hw:1 \
