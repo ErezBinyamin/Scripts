@@ -4,7 +4,10 @@ IP=$1
 SIGNALS=""
 MINPORT=0
 MAXPORT=65535
+NO_COLOR='\e[0m'	# Uncolored
+PORT_COLOR='\e[33m'	# Current Port
 #------------ ~~~~~~~~ ------------
+
 usage() {
 	printf "\nUSAGE: portScanner <TARGET IP>\n\n"
 	exit 1
@@ -15,7 +18,7 @@ testPort() {
 }
 
 signalIRQ() {
-	printf "\nEXIT? [Y/N]: "
+	printf "${NO_COLOR}\nEXIT? [Y/N]: "
 	read -n 1 CHOICE
 	printf "\n\n"
 	[[ ${CHOICE,,}  =~ "y" ]] && exit 0
@@ -36,7 +39,10 @@ trap 'signalIRQ' $SIGNALS
 # #######################
 for i in $(seq $MINPORT $MAXPORT)
 do
-	printf "\r"
+	printf '\r'
 	testPort $i &
-	printf "SCANNING PORT: $i of $MAXPORT"
+	printf "SCANNING PORT: ${PORT_COLOR}${i}${NO_COLOR} of ${MAXPORT}"
 done
+
+# Wait for all parallel jobs to finish
+while [ 1 ]; do fg 2> /dev/null; [ $? == 1 ] && break; done
