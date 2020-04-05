@@ -13,10 +13,10 @@ catcall_host() (
 		-acodec flac \
 		-f matroska \
 		-f video4linux2 -i /dev/video0 \
-		-vcodec mpeg4 -b 3000k \
+		-vcodec mpeg4 \
 		-f matroska \
 		-tune zerolatency -y /dev/stdout \
-		 | nc -l ${PORT} | mplayer - &>/dev/null
+		2>/dev/null | nc -l ${PORT} | mplayer - &>/dev/null
 )
 
 # When server advertise PORT is up, connect audio and video
@@ -37,8 +37,8 @@ catcall_connect() {
 		-acodec flac \
 		-f matroska \
 		-f video4linux2 -i /dev/video0 \
-		-vcodec mpeg4 -b 3000k \
+		-vcodec mpeg4 \
 		-f matroska \
 		-tune zerolatency -y /dev/stdout \
-		 | nc ${IP_ADDR} ${PORT} | mplayer - &>/dev/null
+		2>/dev/null | nc ${IP_ADDR} ${PORT} | mplayer - &>/dev/null
 }
