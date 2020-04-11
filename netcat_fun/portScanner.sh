@@ -14,7 +14,7 @@ usage() {
 }
 
 testPort() {
-	nc -v -z -w 2 $IP $1 &> /dev/null && printf "\n$(nc -v -z $IP $1)"
+	nc -v -z -w 2 $IP $1 &> /dev/null && printf "$(nc -v -z $IP $1 2>&1 | xargs printf '\r%s %s %s %s %s %s %s\n\r\t\t\t\r')"
 }
 
 signalIRQ() {
