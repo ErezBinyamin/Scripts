@@ -2,12 +2,8 @@
 # 1. Run catcall_connect <IP> <PORT> on CLIENT
 # 2. Run catcall_host <PORT> on SERVER
 
-# Server will advertise on PORT
-# Serve audio and video on PORT+1
-catcall_host() (
-	local PORT=${1}
-	nc -l ${PORT} &
-	let PORT++
+# 7 bash commands. One line of code. Really 3 bash commands though.
+[ $# -eq 1 ] && \
 	ffmpeg \
 		-f alsa -i hw:1 \
 		-acodec flac \
@@ -16,23 +12,8 @@ catcall_host() (
 		-vcodec mpeg4 \
 		-f matroska \
 		-tune zerolatency -y /dev/stdout \
-		2>/dev/null | nc -l ${PORT} | mplayer - &>/dev/null
-)
-
-# When server advertise PORT is up, connect audio and video
-catcall_connect() {
-	local IP_ADDR=${1}
-	local PORT=${2}
-	local TRY=0
-	printf "\nAwaiting ${IP_ADDR}:${PORT} to advertise connection:\n"
-	while ! nc -dzW 1 ${IP_ADDR} ${PORT} &>/dev/null
-	do
-		[ $TRY -eq 0 ] && printf '.'
-		TRY=$(((TRY + 1) % 100))
-	done
-	printf '\nCONNECTION ACHIEVED!\n'
-	let PORT++
-	ffmpeg \
+		2>/dev/null | nc -l ${1} | mplayer - &>/dev/null \
+||	ffmpeg \
 		-f alsa -i hw:1 \
 		-acodec flac \
 		-f matroska \
@@ -40,5 +21,4 @@ catcall_connect() {
 		-vcodec mpeg4 \
 		-f matroska \
 		-tune zerolatency -y /dev/stdout \
-		2>/dev/null | nc ${IP_ADDR} ${PORT} | mplayer - &>/dev/null
-}
+		2>/dev/null | nc ${1} ${2} | mplayer - &>/dev/null

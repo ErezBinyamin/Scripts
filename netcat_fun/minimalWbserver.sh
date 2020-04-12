@@ -4,10 +4,8 @@
 # SERVER  USAGE: server <PORT> &
 # sendMSG USAGE: sendMSG <USERNAME> <MESSAGE> <IP> <PORT>
 
-# 8 lines of code... Can be shortened but this is "user friendly"
+# 17 bash commands. 7 lines of code
 server() {
-	[ $# -ne 1 ] || [ $1 -lt 1024 ] || [ $1 -gt 65535 ] && return 1
-	trap "nmap $(hostname -I)" 0
 	printf "HTTP/1.1 200 OK\n\n<!doctype html><h1>Erez's netcat chat server!!</h1><form>Username:<br><input name=\"username\"><br>Message:<br><input name=\"message\"><div><button>Send data</button></div></form>" > /tmp/webpage
 	while [ 1 ]
 	do [[ $(head -1 /tmp/response) =~ "GET /?username" ]] && USER=$(head -1 /tmp/response | sed 's@.*username=@@; s@&message.*@@') && MSG=$(head -1 /tmp/response | sed 's@.*message=@@; s@HTTP.*@@')
