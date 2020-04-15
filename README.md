@@ -1,2 +1,2 @@
 # BashScripts
-Random Misc Bash scripts I use for stuff
+Scripts I use for stuff. Some are fun. Some are usefull. Hopefully most are both.
