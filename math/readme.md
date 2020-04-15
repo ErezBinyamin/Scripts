@@ -1,9 +1,9 @@
 # Erez's math scripts
 
-PROOF:
-	1. Math can often be annoying
-	2. I like to program
-	3. This repo exists
+> {_problems_} ∩ {_math problems_}  
+>> _problems_ can often be annoying  
+>> I like to program  
+>> This repo exists                ∎  
 
 ### Eulers method  
 ```bash
