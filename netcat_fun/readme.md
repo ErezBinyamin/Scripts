@@ -11,9 +11,9 @@ nc ${IP_ARRD} 1234
 ```
 But colors make things much more fun!
 
-![](img/colorfullChat.gif)
+![](../img/colorfullChat.gif)
 
 ## portScanner
 nmap actually only sometimes works, I've found that netcat can find things nmap misses
 
-![](img/portScanner.gif)
+![](../img/portScanner.gif)
