@@ -1,6 +1,6 @@
 # Erez's math scripts
 
-> {_problems_} ∩ {_math problems_}  
+> ∀ _problems_ ∍ {_math problems_}  
 >> _problems_ can often be annoying  
 >> I like to program  
 >> This repo exists                ∎  
