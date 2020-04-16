@@ -9,11 +9,11 @@
 ```bash
 bash euler_method.sh
 ```
-![Eulers Method](data/EulerMethod.png)
+![Eulers Method](img/EulerMethod.png)
 
 
 ### Phase portrait  
 ```bash
 bash phase_portrait.sh
 ```
-![Phase Portrait](data/PhasePortrait.png)
+![Phase Portrait](img/PhasePortrait.png)
