@@ -1,7 +1,7 @@
 # tools
 Misc. tools. Some browse the web, some manage things locally.
 
-## RFC_get
+## symbol
 Search unicode symbols. 
 ```bash
 symbol <string>
