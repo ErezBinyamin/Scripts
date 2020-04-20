@@ -79,6 +79,20 @@ RFC_get()
       | sed 's/##/\n/g' \
       | sed 's/#    //g' \
       | grep -o '.*\. ' \
+      | sed -r 's/^(.*)(January|February|March|April|May|June|July|August|September|October|November|December) [[:digit:]]{4}(.*)$/\1/' \
+      | grep -v 'Not Issued' \
+      | sed 's/ .*//; s/^0*//'
+    printf "\nValid RFC numbers: [ ${MIN_RFC} - ${MAX_RFC} ]\n"
+    return 0
+  # Print list of available RFCs
+  elif [[ "${1,,}" == ":describe" ]]
+  then
+    # Format RFC_INDEX to show short description of each RFC
+    sed -ne '/0001/,$p' ${RFC_INDEX} \
+      | tr '\n' '#' \
+      | sed 's/##/\n/g' \
+      | sed 's/#    //g' \
+      | grep -o '.*\. ' \
       | sed -r 's/^(.*)(January|February|March|April|May|June|July|August|September|October|November|December) [[:digit:]]{4}(.*)$/\1/'
     printf "\nValid RFC numbers: [ ${MIN_RFC} - ${MAX_RFC} ]\n"
     return 0
