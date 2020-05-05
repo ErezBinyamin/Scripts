@@ -9,7 +9,7 @@ symbol <string>
 ![](img/symbol.gif)
 
 ## RFC_get
-Read an RFC from the command line! I reccomend piping to a text viewer.  
+Read an RFC from the command line! I reccomend piping to a text viewer. Now integrated into [cheat.sh](https://github.com/chubin/cheat.sh/blob/master/share/adapters/rfc.sh)!!
 ```bash
 RFC_get <Number_of_RFC || topic string>
 ```
