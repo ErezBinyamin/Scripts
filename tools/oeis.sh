@@ -10,15 +10,18 @@ oeis() {
 	# Search sequence by ID
 	if [ $# -eq 1 ]
 	then
-		[[ ${1:0:1} == 'A' ]] && ID="A$(printf '%06d' ${1:1})" || ID="A$(printf '%06d' ${1})"
+		[[ ${1:0:1} == 'A' ]] && ID=${1:1} || ID=${1}
+		ID=$(bc <<< "$ID")
+		ID="A$(printf '%06d' ${ID})"
+
 		URL+="/${ID}"
 		curl $URL 2>/dev/null > $DOC
 		printf "ID: ${ID}\n"
-		grep -A 1 '<td valign=top align=left>' $DOC | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//'
+		grep -A 1 '<td valign=top align=left>' $DOC | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//; s/<[^>]*>//g;'
 		printf "\n"
-		grep -o '<tt>[0-9].*, [0-9].*[0-9]</tt>' $DOC | sed 's/<[^>]*>//g' | grep -v '[a-z]'
+		grep -o '<tt>.*, .*[0-9]</tt>' $DOC | sed 's/<[^>]*>//g' | grep -v '[a-z]'
 		printf "\n"
-		cat $DOC | tr '\n' '@' | grep -o 'PROG.*CROSSREFS' | tr '@' '\n' | sed 's/^[ \t]*//; s/<[^>]*>//g; s/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g; /^\s*$/d; /CROSSREFS/d; /PROG/d'
+		cat $DOC | tr '\n' '@' | grep -o 'PROG.*CROSSREFS' | tr '@' '\n' | sed 's/^[ \t]*//; s/<[^>]*>//g; s/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g; /^\s*$/d; /CROSSREFS/d; /PROG/d' | sed  's#//.*##g; s#\\.*##g; s#--.*##g; s#/\*.*##g; s/#.*//g'
 		printf "\n"
 	# Search unknown sequence
 	else
@@ -28,7 +31,7 @@ oeis() {
 		curl $URL 2>/dev/null > $DOC
 
 		grep -o '=id:.*&' $DOC | sed 's/=id://; s/&//' > $TMP/id
-		grep -A 1 '<td valign=top align=left>' $DOC | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//' > $TMP/nam
+		grep -A 1 '<td valign=top align=left>' $DOC | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//; s/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g; s/<[^>]*>//g' > $TMP/nam
 		grep -o '<tt>.*<b.*</tt>' $DOC | sed 's/<[^>]*>//g' > $TMP/seq
 
 		# Print data
