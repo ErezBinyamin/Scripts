@@ -26,7 +26,8 @@ oeis() {
     # Sequence
     grep -o '<tt>.*, .*[0-9]</tt>' $DOC \
       | sed 's/<[^>]*>//g' \
-      | grep -v '[a-z]'
+      | grep -v '[a-z]' \
+      | grep -v ':'
     printf "\n"
     # Code
     cat $DOC \
