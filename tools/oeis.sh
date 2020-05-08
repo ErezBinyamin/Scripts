@@ -68,7 +68,7 @@ oeis() {
           | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
           | sed '/PROG/d; /CROSSREFS/d' \
-          | sed 's#//.*##g; s#\\.*##g; s#--.*##g; s/#.*//g; s#/\*.*##g; s/;;.*//; s/{-.*-}//' \
+          | sed 's#//.*##g; s#\\.*##g; s#/\*.*\*/##g; s/;;.*//; s/{-.*-}//' \
           | pygmentize -f terminal256 -g -P style=monokai
     fi
     printf "\n"
