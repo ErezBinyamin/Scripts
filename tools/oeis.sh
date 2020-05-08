@@ -60,19 +60,26 @@ oeis() {
         printf "\n"
     fi
     # PROG section language support
-    if grep -q '(Python)' $DOC
-    then
-        echo "(Python)"
-        cat $DOC \
-          | tr '\n' '@' \
-          | grep -o "PROG.*CROSSREFS" \
-          | tr '@' '\n' \
-          | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
-          | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-          | sed -n '/^([^)]\+)/h;//b;G;/^(Python)/MP' \
-          | pygmentize -f terminal256 -g -P style=monokai -l python
-    fi
-    printf "\n"
+    cat $DOC \
+      | tr '\n' '@' \
+      | grep -o "PROG.*CROSSREFS" \
+      | tr '@' '\n' \
+      | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
+      | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
+      | sed '/PROG/d; /CROSSREFS/d' > ${TMP}/lang
+    langs=("Axiom" "MAGMA" "PARI" "Python" "Sage" "Haskell" "Julia" "GAP" "Scala")
+    for L in ${langs[@]}
+    do
+        echo "foo" | pygmentize -l ${L,,} &>/dev/null && PYG="${L,,}" || PYG="c"
+        SED=$(echo '/^([^)]\+)\s*/h;//s///;G;/^('"${L}"')/MP')
+        printf "(${L})\n"
+        if grep -q "(${L})" $DOC
+        then
+              sed -n "${SED}" ${TMP}/lang \
+              | pygmentize -f terminal256 -g -P style=monokai -l ${PYG}
+        fi
+        printf "\n"
+    done
   # Search unknown sequence
   else
     # Build URL
