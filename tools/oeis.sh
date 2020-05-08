@@ -59,17 +59,18 @@ oeis() {
           | pygmentize -f terminal256 -g -l mathematica -P style=monokai
         printf "\n"
     fi
-    if grep -q 'PROG' $DOC
+    # PROG section language support
+    if grep -q '(Python)' $DOC
     then
+        echo "(Python)"
         cat $DOC \
           | tr '\n' '@' \
           | grep -o "PROG.*CROSSREFS" \
           | tr '@' '\n' \
           | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-          | sed '/PROG/d; /CROSSREFS/d' \
-          | sed 's#//.*##g; s#\\.*##g; s#/\*.*\*/##g; s/;;.*//; s/{-.*-}//' \
-          | pygmentize -f terminal256 -g -P style=monokai
+          | sed -n '/^([^)]\+)/h;//b;G;/^(Python)/MP' \
+          | pygmentize -f terminal256 -g -P style=monokai -l python
     fi
     printf "\n"
   # Search unknown sequence
