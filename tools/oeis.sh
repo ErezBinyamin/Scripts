@@ -71,14 +71,12 @@ oeis() {
     for L in ${langs[@]}
     do
         echo "foo" | pygmentize -l ${L,,} &>/dev/null && PYG="${L,,}" || PYG="c"
-        SED=$(echo '/^([^)]\+)\s*/h;//s///;G;/^('"${L}"')/MP')
-        printf "(${L})\n"
         if grep -q "(${L})" $DOC
         then
-              sed -n "${SED}" ${TMP}/lang \
+              awk -v tgt="${L}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang \
               | pygmentize -f terminal256 -g -P style=monokai -l ${PYG}
+              printf "\n"
         fi
-        printf "\n"
     done
   # Search unknown sequence
   else
