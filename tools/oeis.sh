@@ -30,18 +30,47 @@ oeis() {
       | grep -v ':'
     printf "\n"
     # Code
-    grep -q 'PROG'        $DOC && GREP_REGEX='PROG.*CROSSREFS'
-    grep -q 'MATHEMATICA' $DOC && GREP_REGEX='MATHEMATICA.*CROSSREFS'
-    grep -q 'MAPLE'       $DOC && GREP_REGEX='MAPLE.*CROSSREFS'
-#      | sed 's#//.*##g; s#\\.*##g; s#--.*##g; s/#.*//g; s#/\*.*##g; s#(\*.*##g; s/;;.*//' \
-    cat $DOC \
-      | tr '\n' '@' \
-      | grep -o "${GREP_REGEX}" \
-      | tr '@' '\n' \
-      | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
-      | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-      | sed 's/MAPLE/(MAPLE)/; s/MATHEMATICA/(MATHEMATICA)/; s/PROG//; /CROSSREFS/d' \
-      | pygmentize -f terminal256 -g -P style=monokai
+    if grep -q 'MAPLE' $DOC
+    then
+        GREP_REGEX='MAPLE.*CROSSREFS'
+        grep -q 'PROG' $DOC && GREP_REGEX='MAPLE.*PROG'
+        grep -q 'MATHEMATICA' $DOC && GREP_REGEX='MAPLE.*MATHEMATICA'
+        cat $DOC \
+          | tr '\n' '@' \
+          | grep -o "${GREP_REGEX}" \
+          | tr '@' '\n' \
+          | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
+          | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
+          | sed 's/MAPLE/(MAPLE)/; /MATHEMATICA/d; /PROG/d; /CROSSREFS/d' \
+          | pygmentize -f terminal256 -g -l python -P style=monokai
+        printf "\n"
+    fi
+    if grep -q 'MATHEMATICA' $DOC
+    then
+        GREP_REGEX='MATHEMATICA.*CROSSREFS'
+        grep -q 'PROG' $DOC && GREP_REGEX='MATHEMATICA.*PROG'
+        cat $DOC \
+          | tr '\n' '@' \
+          | grep -o "${GREP_REGEX}" \
+          | tr '@' '\n' \
+          | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
+          | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
+          | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d' \
+          | pygmentize -f terminal256 -g -l mathematica -P style=monokai
+        printf "\n"
+    fi
+    if grep -q 'PROG' $DOC
+    then
+        cat $DOC \
+          | tr '\n' '@' \
+          | grep -o "PROG.*CROSSREFS" \
+          | tr '@' '\n' \
+          | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
+          | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
+          | sed '/PROG/d; /CROSSREFS/d' \
+          | sed 's#//.*##g; s#\\.*##g; s#--.*##g; s/#.*//g; s#/\*.*##g; s/;;.*//; s/{-.*-}//' \
+          | pygmentize -f terminal256 -g -P style=monokai
+    fi
     printf "\n"
   # Search unknown sequence
   else
