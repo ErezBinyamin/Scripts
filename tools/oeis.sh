@@ -30,14 +30,17 @@ oeis() {
       | grep -v ':'
     printf "\n"
     # Code
+    grep -q 'PROG'        $DOC && GREP_REGEX='PROG.*CROSSREFS'
+    grep -q 'MATHEMATICA' $DOC && GREP_REGEX='MATHEMATICA.*CROSSREFS'
+    grep -q 'MAPLE'       $DOC && GREP_REGEX='MAPLE.*CROSSREFS'
+#      | sed 's#//.*##g; s#\\.*##g; s#--.*##g; s/#.*//g; s#/\*.*##g; s#(\*.*##g; s/;;.*//' \
     cat $DOC \
       | tr '\n' '@' \
-      | grep -o 'PROG.*CROSSREFS' \
+      | grep -o "${GREP_REGEX}" \
       | tr '@' '\n' \
-      | sed 's/^[ \t]*//; s/<[^>]*>//g' \
+      | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
       | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-      | sed '/^\s*$/d; /CROSSREFS/d; /PROG/d' \
-      | sed  's#//.*##g; s#\\.*##g; s#--.*##g; s#/\*.*##g; s/#.*//g' \
+      | sed 's/MAPLE/(MAPLE)/; s/MATHEMATICA/(MATHEMATICA)/; s/PROG//; /CROSSREFS/d' \
       | pygmentize -f terminal256 -g -P style=monokai
     printf "\n"
   # Search unknown sequence
