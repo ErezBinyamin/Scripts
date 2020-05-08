@@ -37,7 +37,7 @@ oeis() {
       | sed 's/^[ \t]*//; s/<[^>]*>//g' \
       | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
       | sed '/^\s*$/d; /CROSSREFS/d; /PROG/d' \
-      | sed  's#//.*##g; s#\\.*##g; s#--.*##g; s#/\*.*##g; s/#.*//g'
+      | sed  's#//.*##g; s#\\.*##g; s#--.*##g; s#/\*.*##g; s/#.*//g' | pygmentize -g
     printf "\n"
   # Search unknown sequence
   else
