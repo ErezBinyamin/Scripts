@@ -36,9 +36,9 @@ oeis() {
         grep -q 'PROG' $DOC && GREP_REGEX='MAPLE.*PROG'
         grep -q 'MATHEMATICA' $DOC && GREP_REGEX='MAPLE.*MATHEMATICA'
         cat $DOC \
-          | tr '\n' '@' \
+          | tr '\n' '`' \
           | grep -o "${GREP_REGEX}" \
-          | tr '@' '\n' \
+          | tr '`' '\n' \
           | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
           | sed 's/MAPLE/(MAPLE)/; /MATHEMATICA/d; /PROG/d; /CROSSREFS/d' \
@@ -50,9 +50,9 @@ oeis() {
         GREP_REGEX='MATHEMATICA.*CROSSREFS'
         grep -q 'PROG' $DOC && GREP_REGEX='MATHEMATICA.*PROG'
         cat $DOC \
-          | tr '\n' '@' \
+          | tr '\n' '`' \
           | grep -o "${GREP_REGEX}" \
-          | tr '@' '\n' \
+          | tr '`' '\n' \
           | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
           | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d' \
@@ -61,9 +61,9 @@ oeis() {
     fi
     # PROG section language support
     cat $DOC \
-      | tr '\n' '@' \
+      | tr '\n' '`' \
       | grep -o "PROG.*CROSSREFS" \
-      | tr '@' '\n' \
+      | tr '`' '\n' \
       | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
       | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
       | sed '/PROG/d; /CROSSREFS/d' > ${TMP}/lang
