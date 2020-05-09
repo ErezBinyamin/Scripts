@@ -21,7 +21,8 @@ oeis() {
     printf "ID: ${ID}\n"
     # Description
     grep -A 1 '<td valign=top align=left>' $DOC \
-      | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//; s/<[^>]*>//g;'
+      | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//; s/<[^>]*>//g;' \
+      | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g'
     printf "\n"
     # Sequence
     grep -o '<tt>.*, .*[0-9]</tt>' $DOC \
@@ -81,7 +82,7 @@ oeis() {
   # Search unknown sequence
   else
     # Build URL
-    URL+="/search?q=$(echo $@ | tr ' ' ',')"
+    URL+="/search?q=signed%3A$(echo $@ | tr ' ' ',')"
     curl $URL 2>/dev/null > $DOC
     # Sequence IDs
     grep -o '=id:.*&' $DOC \
