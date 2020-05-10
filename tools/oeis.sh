@@ -42,8 +42,7 @@ oeis() {
           | tr '`' '\n' \
           | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-          | sed 's/MAPLE/(MAPLE)/; /MATHEMATICA/d; /PROG/d; /CROSSREFS/d' \
-          | pygmentize -f terminal256 -g -l python -P style=monokai
+          | sed 's/MAPLE/(MAPLE)/; /MATHEMATICA/d; /PROG/d; /CROSSREFS/d'
         printf "\n"
     fi
     if grep -q 'MATHEMATICA' $DOC
@@ -56,8 +55,7 @@ oeis() {
           | tr '`' '\n' \
           | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-          | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d' \
-          | pygmentize -f terminal256 -g -l mathematica -P style=monokai
+          | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d'
         printf "\n"
     fi
     # PROG section language support
@@ -71,11 +69,9 @@ oeis() {
     langs=("Axiom" "MAGMA" "PARI" "Python" "Sage" "Haskell" "Julia" "GAP" "Scala")
     for L in ${langs[@]}
     do
-        echo "foo" | pygmentize -l ${L,,} &>/dev/null && PYG="${L,,}" || PYG="c"
         if grep -q "(${L})" $DOC
         then
-              awk -v tgt="${L}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang \
-              | pygmentize -f terminal256 -g -P style=monokai -l ${PYG}
+              awk -v tgt="${L}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang
               printf "\n"
         fi
     done
