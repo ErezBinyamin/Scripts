@@ -44,15 +44,15 @@ oeis() (
     ID="A$(printf '%06d' ${ID})"
     URL+="/${ID}"
     curl $URL 2>/dev/null > $DOC
-    # ID
+    # Print ID
     printf "ID: ${ID}\n"
-    # Description
+    # Print Description
     get_desc
     printf "\n"
-    # Sequence
+    # Print Sequence sample limited by $MAX_TERMS
     get_seq
     printf "\n"
-    # Code Sample
+    # Print Code Sample
     if [[ ${LANG^^} == 'MAPLE' ]] && grep -q 'MAPLE' $DOC
     then
         GREP_REGEX='MAPLE.*CROSSREFS'
@@ -78,7 +78,7 @@ oeis() (
           | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
           | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d'
     fi
-    # PROG section language support
+    # PROG section contains more code samples (Non Mathematica or Maple)
     cat $DOC \
       | tr '\n' '`' \
       | grep -o "PROG.*CROSSREFS" \
@@ -87,11 +87,13 @@ oeis() (
       | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
       | sed '/PROG/d; /CROSSREFS/d' > ${TMP}/lang
     # Print out code sample for specified language
-    awk -v tgt="${LANG^^}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang
+    rm -f ${TMP}/code
+    awk -v tgt="${LANG^^}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang > ${TMP}/code
     L="${LANG:0:1}"
     LANG="${LANG:1}"
     LANG="${L^^}${LANG,,}"
-    awk -v tgt="${LANG}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang
+    [ $(wc -c < $TMP/code) -eq 0 ] && awk -v tgt="${LANG}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang > ${TMP}/code
+    cat ${TMP}/code
   # Search unknown sequence
   else
     # Build URL
