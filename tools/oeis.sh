@@ -77,15 +77,15 @@ oeis() (
     fi
     # PROG section contains more code samples (Non Mathematica or Maple)
     parse_code "PROG.*CROSSREFS" \
-      | sed '/PROG/d; /CROSSREFS/d' > ${TMP}/lang
+      | sed '/PROG/d; /CROSSREFS/d' > ${TMP}/prog
     # Print out code sample for specified language
-    rm -f ${TMP}/code
-    awk -v tgt="${LANG^^}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang > ${TMP}/code
+    rm -f ${TMP}/code_snippet
+    awk -v tgt="${LANG^^}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/prog > ${TMP}/code_snippet
     L="${LANG:0:1}"
     LANG="${LANG:1}"
     LANG="${L^^}${LANG,,}"
-    [ $(wc -c < $TMP/code) -eq 0 ] && awk -v tgt="${LANG}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/lang > ${TMP}/code
-    cat ${TMP}/code
+    [ $(wc -c < $TMP/code_snippet) -eq 0 ] && awk -v tgt="${LANG}" -F'[()]' '/^\(/{f=(tgt==$2)} f' ${TMP}/prog > ${TMP}/code_snippet
+    cat ${TMP}/code_snippet
   # Search unknown sequence
   else
     # Build URL
