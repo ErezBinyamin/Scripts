@@ -95,16 +95,16 @@ oeis() (
     grep -o '=id:.*&' $DOC \
       | sed 's/=id://; s/&//' > $TMP/id
     # Descriptions
-    get_desc > $TMP/nam
+    get_desc > $TMP/desc
     # Sequences
     get_seq > $TMP/seq
     # Print data for all
     readarray -t ID < $TMP/id
-    readarray -t NAM < $TMP/nam
+    readarray -t DESC < $TMP/desc
     readarray -t SEQ < $TMP/seq
     for i in ${!ID[@]}
     do
-      printf "${ID[$i]}: ${NAM[$i]}\n"
+      printf "${ID[$i]}: ${DESC[$i]}\n"
       echo ${SEQ[$i]}
       printf "\n"
     done
