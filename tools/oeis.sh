@@ -18,6 +18,7 @@ oeis() (
     grep -A 1 '<td valign=top align=left>' $DOC \
       | sed '/<td valign=top align=left>/d; /--/d; s/^[ \t]*//; s/<[^>]*>//g;' \
       | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g'
+    return $?
   }
   # Print out the first MAX_TERMS terms of a sequence
   get_seq() {
@@ -26,6 +27,18 @@ oeis() (
       | grep -v '[a-z]' \
       | grep -v ':' \
       | cut -d ',' -f 1-${MAX_TERMS}
+    return $?
+  }
+  # Sample code parser INPUT arg: is grep regex <FROM*TO>
+  parse_code() {
+    local GREP_REGEX="${1}"
+    cat $DOC \
+      | tr '\n' '`' \
+      | grep -o "${GREP_REGEX}" \
+      | tr '`' '\n' \
+      | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
+      | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g'
+    return $?
   }
   # Search sequence by ID
   if [ $# -lt 3 ]
@@ -55,36 +68,21 @@ oeis() (
     # Print Code Sample
     if [[ ${LANG^^} == 'MAPLE' ]] && grep -q 'MAPLE' $DOC
     then
-        GREP_REGEX='MAPLE.*CROSSREFS'
-        grep -q 'PROG' $DOC && GREP_REGEX='MAPLE.*PROG'
-        grep -q 'MATHEMATICA' $DOC && GREP_REGEX='MAPLE.*MATHEMATICA'
-        cat $DOC \
-          | tr '\n' '`' \
-          | grep -o "${GREP_REGEX}" \
-          | tr '`' '\n' \
-          | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
-          | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-          | sed 's/MAPLE/(MAPLE)/; /MATHEMATICA/d; /PROG/d; /CROSSREFS/d'
+      GREP_REGEX='MAPLE.*CROSSREFS'
+      grep -q 'PROG' $DOC && GREP_REGEX='MAPLE.*PROG'
+      grep -q 'MATHEMATICA' $DOC && GREP_REGEX='MAPLE.*MATHEMATICA'
+      parse_code "${GREP_REGEX}" \
+        | sed 's/MAPLE/(MAPLE)/; /MATHEMATICA/d; /PROG/d; /CROSSREFS/d'
     fi
     if [[ ${LANG^^} == 'MATHEMATICA' ]] && grep -q 'MATHEMATICA' $DOC
     then
-        GREP_REGEX='MATHEMATICA.*CROSSREFS'
-        grep -q 'PROG' $DOC && GREP_REGEX='MATHEMATICA.*PROG'
-        cat $DOC \
-          | tr '\n' '`' \
-          | grep -o "${GREP_REGEX}" \
-          | tr '`' '\n' \
-          | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
-          | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
-          | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d'
+      GREP_REGEX='MATHEMATICA.*CROSSREFS'
+      grep -q 'PROG' $DOC && GREP_REGEX='MATHEMATICA.*PROG'
+      parse_code "${GREP_REGEX}" \
+        | sed 's/MATHEMATICA/(MATHEMATICA)/; /PROG/d; /CROSSREFS/d'
     fi
     # PROG section contains more code samples (Non Mathematica or Maple)
-    cat $DOC \
-      | tr '\n' '`' \
-      | grep -o "PROG.*CROSSREFS" \
-      | tr '`' '\n' \
-      | sed 's/^[ \t]*//; s/<[^>]*>//g; /^\s*$/d;' \
-      | sed 's/&nbsp;/ /g; s/\&amp;/\&/g; s/&gt;/>/g; s/&lt;/</g; s/&quot;/"/g' \
+    parse_code "PROG.*CROSSREFS" \
       | sed '/PROG/d; /CROSSREFS/d' > ${TMP}/lang
     # Print out code sample for specified language
     rm -f ${TMP}/code
