@@ -22,6 +22,7 @@ oeis() (
   }
   # Print out the first MAX_TERMS terms of a sequence
   get_seq() {
+    local MAX_TERMS=${1}
     grep -o '<tt>.*, .*[0-9]</tt>' $DOC \
       | sed 's/<[^>]*>//g' \
       | grep -v '[a-z]' \
@@ -57,7 +58,7 @@ oeis() (
     get_desc
     printf "\n"
     # Print Sequence sample limited by $MAX_TERMS
-    get_seq
+    get_seq ${MAX_TERMS}
     printf "\n"
     # Print Code Sample
     if [[ ${LANG^^} == 'MAPLE' ]] && grep -q 'MAPLE' $DOC
@@ -97,7 +98,7 @@ oeis() (
     # Descriptions
     get_desc > $TMP/desc
     # Sequences
-    get_seq > $TMP/seq
+    get_seq ${MAX_TERMS} > $TMP/seq
     # Print data for all
     readarray -t ID < $TMP/id
     readarray -t DESC < $TMP/desc
