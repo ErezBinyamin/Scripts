@@ -44,14 +44,8 @@ oeis() (
   if [ $# -lt 3 ]
   then
     # Arg-Parse ID, Generate URL
-    if echo $1 | grep -q -e [a-z] -e [B-Z]
-    then
-      ID=$2
-      LANG=$1
-    else
-      ID=$1
-      LANG=$2
-    fi
+    echo $1 | grep -q -e [a-z] -e [B-Z] && ID=$2 || ID=$1
+    echo $1 | grep -q -e [a-z] -e [B-Z] && LANG=$1 || LANG=$2
     [[ ${ID:0:1} == 'A' ]] && ID=${ID:1}
     ID=$(bc <<< "$ID")
     ID="A$(printf '%06d' ${ID})"
