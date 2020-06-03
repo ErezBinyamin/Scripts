@@ -6,7 +6,7 @@
 # Contrib to chubin - cheat.sh
 RFC_get()
 (
-  rcf_describe() {
+  rfc_describe() {
     sed -ne '/0001/,$p' ${RFC_INDEX} \
       | tr '\n' '#' \
       | sed 's/##/\n/g' \
@@ -83,7 +83,7 @@ RFC_get()
   elif [[ "${1,,}" == ":list" ]]
   then
     # Format RFC_INDEX to show short description of each RFC
-    rcf_describe \
+    rfc_describe \
       | grep -v 'Not Issued' \
       | sed 's/ .*//; s/^0*//'
     return 0
@@ -91,12 +91,12 @@ RFC_get()
   elif [[ "${1,,}" == ":describe" ]]
   then
     # Format RFC_INDEX to show short description of each RFC
-    rcf_describe
+    rfc_describe
     return 0
   # Format list of RFCs related to keyword:   RFC_N  RFC_Title
   else
     ARG="$*"
-    rcf_describe \
+    rfc_describe \
       | grep -i "$ARG" \
       > $WEB_RESP
   fi
