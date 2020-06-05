@@ -1,6 +1,6 @@
 #!/bin/bash
-
-alias docker='sudo docker'
+SUDO='sudo'
+alias docker="${SUDO} docker"
 
 # The only function defined in here thus far
 # Acts like command line command implementing get-opt and all that
