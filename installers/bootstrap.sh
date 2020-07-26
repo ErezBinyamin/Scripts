@@ -68,7 +68,6 @@ bootstrap() {
 	DOCKER_IMAGES=()
 	DOCKER_IMAGES+=("frolvlad/alpine-python2")
 	DOCKER_IMAGES+=("frolvlad/alpine-python3")
-	DOCKER_IMAGES+=("schickling/latex")
 	for dimage in ${DOCKER_IMAGES[$@]}
 	do
 		[[ "$(docker images -q ${dimage} 2> /dev/null)" == "" ]] && docker pull frolvlad/alpine-python2 || echo [COMPLETE] ${dimage}
