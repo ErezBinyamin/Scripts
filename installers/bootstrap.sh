@@ -14,6 +14,7 @@ bootstrap() {
 	PACKAGES+=("git")
 	PACKAGES+=("vim")
 	PACKAGES+=("xclip")
+	PACKAGES+=("kolourpaint")
 	for pkg in ${PACKAGES[@]}
 	do
 		dpkg -s $pkg &>/dev/null || sudo apt install -y ${pkg} && echo [COMPLETE] ${pkg}
