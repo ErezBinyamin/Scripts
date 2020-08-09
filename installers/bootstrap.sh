@@ -11,6 +11,7 @@ bootstrap() {
 	PACKAGES+=("gnome-tweaks")
 	PACKAGES+=("laptop-mode-tools")
 	PACKAGES+=("curl")
+	PACKAGES+=("aria2")
 	PACKAGES+=("git")
 	PACKAGES+=("vim")
 	PACKAGES+=("xclip")
