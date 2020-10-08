@@ -31,12 +31,12 @@ signalIRQ() {
 [ $# -gt 2 ] || [ ${#1} -lt 7 ] || [ ${#1} -gt 15 ] && usage
 
 # Trap signals (all strings of length >3 from trap -l output)
-for i in $(trap -l)
-do
-	[ ${#i} -gt 3 ] && SIGNALS="$SIGNALS $i"
-done
+#for i in $(trap -l)
+#do
+#	[ ${#i} -gt 3 ] && SIGNALS="$SIGNALS $i"
+#done
+#trap 'signalIRQ' $SIGNALS
 
-trap 'signalIRQ' $SIGNALS
 # #######################
 # MAIN Port scan loop
 # #######################
