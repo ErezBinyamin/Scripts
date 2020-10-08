@@ -3,7 +3,7 @@
 install_docker() {
 	# Install Docker
 	# https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
-	if docker -v &>/dev/null
+	if ! which docker &>/dev/null
 	then
 		sudo apt install -y \
 			sudo apt-transport-https \
@@ -13,7 +13,7 @@ install_docker() {
 			software-properties-common
 		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo sudo apt-key add -
 		sudo apt-key fingerprint 0EBFCD88
-		add-apt-repository \
+		sudo add-apt-repository \
 			"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
 			$(lsb_release -cs) \
 			stable"
@@ -23,9 +23,19 @@ install_docker() {
 			containerd.io
 		sudo apt-cache madison docker-ce
 	else
-		echo [COMPLETE] docker
+		echo [COMPLETE] docker installed!
 	fi
-	return 0
+
+	# Docker images
+	# DOCKER_IMAGES=()
+	# DOCKER_IMAGES+=("frolvlad/alpine-python2")
+	# DOCKER_IMAGES+=("frolvlad/alpine-python3")
+	# for dimage in ${DOCKER_IMAGES[$@]}
+	# do
+	# 	[[ "$(docker images -q ${dimage} 2> /dev/null)" == "" ]] && docker pull frolvlad/alpine-python2 || echo [COMPLETE] ${dimage}
+	# done
+
+
 }
 
 install_docker $@
