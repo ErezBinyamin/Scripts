@@ -8,7 +8,7 @@ mkdir -p ${FPBASE}
 
 # Download launcher
 cd ${DOWNLOAD}
-wget 'https://bluepload.unstable.life/flashpoint-bin.deb/torrent'
+aria2c -x 16 'https://bluepload.unstable.life/flashpoint-bin.deb/torrent'
 mv torrent flashpoint.torrent
 aria2c --seed-time 0 -V flashpoint.torrent
 printf "

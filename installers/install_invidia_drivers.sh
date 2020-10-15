@@ -50,7 +50,7 @@ step_3() {
 	[ ${CHOICE^^} == 'N' ] && return 0
 
 	printf '\nDownloading NVIDIA-Linux-x86_64-440.44.run\n'
-	wget 'http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run'
+	aria2c -x 16 'http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run'
 
 	printf '\nThe NVIDIA installer will not run while X is running so switch to text mode:\n'
 	sudo systemctl set-default multi-user.target
@@ -73,7 +73,7 @@ step_5() {
 	[ ${CHOICE^^} == 'N' ] && return 0
 
 	printf 'Downloading cuda_10.2.89_440.33.01_linux.run'
-	wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
+	aria2c -x 16 http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
 
 	printf 'Run the CUDA installer.\n\n'
 	printf 'Say no to installing the NVIDIA driver. The standalone driver you already installed is typically newer than what is packaged with CUDA. Use the default option for all other choices.'

@@ -5,7 +5,7 @@ BASE_URL='https://ghidra-sre.org'
 GDRA_ZIP=$(curl "${BASE_URL}" 2>/dev/null | grep -i download | grep -o 'href=".*\.zip' |sed 's/href="//')
 if [ ! -f ${GDRA_ZIP} ]
 then
-	wget ${BASE_URL}/${GDRA_ZIP}
+	aria2c -x 16 ${BASE_URL}/${GDRA_ZIP}
 	unzip ${GDRA_ZIP}
 else
 	echo "Ghidra latest version already installed!"
