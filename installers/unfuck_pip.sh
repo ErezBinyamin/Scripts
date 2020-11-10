@@ -1,6 +1,7 @@
 #!/bin/bash
-
 # https://github.com/pypa/pip/issues/5495
+export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
+set -x
 
 pip3 freeze | xargs pip3 uninstall -y
 pip3 freeze | grep -v "^-e" | xargs pip3 uninstall -y

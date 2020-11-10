@@ -1,4 +1,6 @@
 #!/bin/bash
+export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
+set -x
 
 # Download current ghidra version
 BASE_URL='https://ghidra-sre.org'

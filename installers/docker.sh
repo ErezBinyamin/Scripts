@@ -1,8 +1,10 @@
 #!/bin/bash
+# https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
+set -x
 
 install_docker() {
 	# Install Docker
-	# https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 	if ! which docker &>/dev/null
 	then
 		sudo apt install -y \

@@ -1,4 +1,7 @@
 #!/bin/bash
+export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
+set -x
+
 bootstrap() {
 	# Update, upgrade, autoremove
 	sudo apt update

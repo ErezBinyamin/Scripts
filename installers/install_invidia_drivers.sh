@@ -1,5 +1,7 @@
 #!/bin/bash
 # https://www.advancedclustering.com/act_kb/installing-nvidia-drivers-rhel-centos-7/
+export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
+set -x
 
 step_0() {
 	read -p "Basic package update and install. Continue? [Y/N]" -sn1 CHOICE

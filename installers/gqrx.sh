@@ -1,5 +1,7 @@
 #!/bin/bash
 # https://gqrx.dk/download/install-ubuntu
+export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
+set -x
 
 sudo apt-get purge --auto-remove gqrx
 sudo apt-get purge --auto-remove gqrx-sdr
