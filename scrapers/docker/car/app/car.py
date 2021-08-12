@@ -70,16 +70,36 @@ def scrape_model_year(URL, make):
     return result
 
 def scrape_full(URL, year, make, model):
-    raise NotImplementedError
     result = None
+    keys = []
+    values = []
+
     head = requests.head(URL)
     if head.ok:
         get = requests.get(URL) 
         soup = BeautifulSoup(get.content, "html.parser")
+        
+        blob = soup.find('div', class_="main-car-details")
+        if blob.find('span'):
+            price = blob.find('span').text.strip()
+            keys.append('price')
+            values.append(price)
+            if blob.find('span').next_sibling.next_sibling:
+                mileage = blob.find('span').next_sibling.next_sibling.strip()
+                keys.append('mileage')
+                values.append(mileage)
+        elif blob.text:
+            mileage = blob.text.strip()
+            keys.append('mileage')
+            values.append(mileage)
 
-        #headers = [ ]
-        #table = [ i for i in itertools.zip_longest(years, models) ]
-        #result = tabulate(table, headers=headers)
+        blob = soup.find('div', class_="car-details").findAll('div', class_="pure-u-1 pure-u-md-1-2")
+        keys.extend([ d.findNext('h4').text.strip(' \r\n\t') for d in blob ])
+        values.extend([ d.findNext('h4').next_sibling.strip(' \r\n\t') for d in blob ])
+
+        headers = [ 'key', 'value']
+        table = [ i for i in itertools.zip_longest(keys, values) ]
+        result = tabulate(table, headers=headers)
     else:
         logger.error("HTTP %d: %s" % (head.status_code, URL))
     return result
