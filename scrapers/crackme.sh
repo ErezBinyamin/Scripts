@@ -1,7 +1,31 @@
 #!/bin/bash
 # Download a random crackme from: https://crackmes.one/
 
-crackme() (
+download_crackme() {
+  DESCURL=$1
+  BINURL=$2
+  # Parse binary description
+  curl --silent $DESCURL > /tmp/foo.html
+  grep -A 3 \
+       -e 'Author' \
+       -e 'Language' \
+       -e 'Upload' \
+       -e 'Platform' \
+       -e 'Difficulty' \
+       -e 'Quality' \
+       -e 'Description' \
+       /tmp/foo.html | sed -e 's/<[^>]*>//g; /^[[:space:]]*$/d; /--/d; s/&#34;/"/g'
+
+  read -p "Download this crackme? [y/n]" X
+  if [[ "${X,,}" =~ 'y' ]]
+  then
+     # Download actual binary
+     wget $BINURL
+     echo "Crackme downloaded from: ${DESCURL}"
+  fi 
+}
+
+crackme_main() {
   local BASEURL='https://crackmes.one'
   local TMPDIR=$(mktemp -d)
   local RAW=${TMPDIR}/raw.html
@@ -29,27 +53,8 @@ crackme() (
     return 1
   fi
 
-  # Parse binary description
-  curl --silent $DESCURL > /tmp/foo.html
-  grep -A 3 \
-       -e 'Author' \
-       -e 'Language' \
-       -e 'Upload' \
-       -e 'Platform' \
-       -e 'Difficulty' \
-       -e 'Quality' \
-       -e 'Description' \
-       /tmp/foo.html | sed -e 's/<[^>]*>//g; /^[[:space:]]*$/d; /--/d; s/&#34;/"/g'
-
-  read -p "Download this crackme? [y/n]" X
-  if [[ "${X,,}" =~ 'y' ]]
-  then
-     # Download actual binary
-     wget $BINURL
-     echo "Crackme downloaded from: ${DESCURL}"
-  fi 
-
+  download_crackme $DESCURL $BINURL
   rm -rf $TMPDIR
-)
+}
 
-crackme $@
+crackme_main $@
