@@ -45,7 +45,7 @@ if nmap -T4 -Pn -p${RPORT} --script=smtp-open-relay ${RHOST} 2>/dev/null | grep 
 then
 	>&2 echo "[SUCCESS] SMTP is an open-relay"
 else
-	>&2 echo "[FAIL] SMTP is an open-relay"
+	>&2 echo "[FAIL] SMTP is not an open-relay"
 fi
 
 # Enumerate information from remote SMTP services with NTLM authentication enabled.
