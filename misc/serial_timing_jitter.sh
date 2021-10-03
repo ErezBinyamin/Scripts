@@ -8,10 +8,16 @@ delta_t() {
 }
 
 serial_test() {
+	# Argparse
 	[ $# -ne 1 ] && return 1
 	[ $1 -gt 1 ] || return 1
 	local NUM_SAMPLES=${1}
+	local PACKET_SIZE=${2:-"5"}
 	local TEST_OUT_FILE=/tmp/serial_test.csv
+
+	# Packet will have new line apended
+	let PACKET_SIZE--
+	local PACKET=$(head -c ${PACKET_SIZE} < /dev/zero | tr '\0' '\141')
 
 	# Get serial devices
 	local TxD="/dev/$(ls -l /dev/serial/by-id/ | grep 'Prolific' | grep -o 'tty.*' | head -n1)"
@@ -26,7 +32,6 @@ serial_test() {
 	exec {var}<${RxD}
 	local RxFD=$var
 
-
 	rm -f ${TEST_OUT_FILE}
 	local COUNT=0
 	while [ ${COUNT} -lt ${NUM_SAMPLES} ]
@@ -34,7 +39,7 @@ serial_test() {
 		# Time before packet send
 		T1=$(date +'%T.%N')
 
-		printf "TEST\n" > $TxD
+		printf "${PACKET}\n" > $TxD
 		read RX < $RxD
 
 		# Time after packet send
@@ -48,4 +53,4 @@ serial_test() {
 	exec <&${RxFD}-
 }
 
-local_test $@
+serial_test $@
