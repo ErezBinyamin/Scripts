@@ -15,14 +15,14 @@ serial_test() {
 	local PACKET_SIZE=${2:-"5"}
 	local TMP=/tmp/serial_jitter
 
-	# Packet will have new line apended
-	let PACKET_SIZE--
-	local PACKET=$(head -c ${PACKET_SIZE} < /dev/zero | tr '\0' '\141')
-
 	# Create output files
 	mkdir -p ${TMP}
         local LOG=$(mktemp ${TMP}/test_PKTSZE_${PACKET_SIZE}_XXXXX.dat)
         echo "test output: ${LOG}"
+
+	# Packet will have new line apended
+	let PACKET_SIZE--
+	local PACKET=$(head -c ${PACKET_SIZE} < /dev/zero | tr '\0' '\141')
 
 	# Get serial devices
 	local TxD="/dev/$(ls -l /dev/serial/by-id/ | grep 'Prolific' | grep -o 'tty.*' | head -n1)"
