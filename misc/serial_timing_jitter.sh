@@ -13,11 +13,16 @@ serial_test() {
 	[ $1 -gt 1 ] || return 1
 	local NUM_SAMPLES=${1}
 	local PACKET_SIZE=${2:-"5"}
-	local TEST_OUT_FILE=/tmp/serial_test.csv
+	local TMP=/tmp/serial_jitter
 
 	# Packet will have new line apended
 	let PACKET_SIZE--
 	local PACKET=$(head -c ${PACKET_SIZE} < /dev/zero | tr '\0' '\141')
+
+	# Create output files
+	mkdir -p ${TMP}
+        local LOG=$(mktemp ${TMP}/test_PKTSZE_${PACKET_SIZE}_XXXXX.dat)
+        echo "test output: ${LOG}"
 
 	# Get serial devices
 	local TxD="/dev/$(ls -l /dev/serial/by-id/ | grep 'Prolific' | grep -o 'tty.*' | head -n1)"
@@ -32,7 +37,6 @@ serial_test() {
 	exec {var}<${RxD}
 	local RxFD=$var
 
-	rm -f ${TEST_OUT_FILE}
 	local COUNT=0
 	while [ ${COUNT} -lt ${NUM_SAMPLES} ]
 	do
@@ -44,7 +48,7 @@ serial_test() {
 
 		# Time after packet send
 		T2=$(date +'%T.%N')
-		delta_t ${T1} ${T2} >> ${TEST_OUT_FILE}
+		delta_t ${T1} ${T2} >> ${LOG}
 		let COUNT++
 	done
 

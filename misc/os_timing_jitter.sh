@@ -13,7 +13,7 @@ local_test() {
 	[ $1 -gt 1 ] || return 1
 	local NUM_SAMPLES=${1}
 	local PACKET_SIZE=${2:-"5"}
-	local TMP=/tmp/local_test_jitter
+	local TMP=/tmp/local_jitter
 
 	# Packet will have new line apended
 	let PACKET_SIZE--
@@ -21,7 +21,7 @@ local_test() {
 
 	# Create output files and fifo for timing consistency
 	mkdir -p ${TMP}
-	local LOG=$(mktemp ${TMP}/test.XXXXX.dat)
+	local LOG=$(mktemp ${TMP}/test_PKTSZE_${PACKET_SIZE}_XXXXX.dat)
 	echo "test output: ${LOG}"
 	local TFIFO=$(mktemp --dry-run /tmp/tfifo.XXXXX)
 	mkfifo ${TFIFO}
