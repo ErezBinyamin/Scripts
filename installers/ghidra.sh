@@ -1,27 +1,16 @@
 #!/bin/bash
+# From: https://github.com/NationalSecurityAgency/ghidra#download-additional-build-dependencies-into-source-repository
 export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
 set -x
 
-# Download current ghidra version
-BASE_URL='https://ghidra-sre.org'
-GDRA_ZIP=$(curl "${BASE_URL}" 2>/dev/null | grep -i download | grep -o 'href=".*\.zip' |sed 's/href="//')
-if [ ! -f ${GDRA_ZIP} ]
-then
-	aria2c -x 16 ${BASE_URL}/${GDRA_ZIP}
-	unzip ${GDRA_ZIP}
-else
-	echo "Ghidra latest version already installed!"
-fi
+# TODO: Conditionally install gradle
 
-# Install Java jdk and jre
-if ! dpkg -s openjdk-11-jdk &>/dev/null
-then
-	sudo add-apt-repository ppa:openjdk-r/ppa
-	sudo apt update
-	sudo apt install -y openjdk-11-jdk \
-			openjdk-11-jre-headless
-else
-	echo "OpenJDK 11 latest version already installed!"
-fi
+# Download from GitHub
+git clone https://github.com/NationalSecurityAgency/ghidra.git
+# Download additional build dependencies into source repository:
+cd ghidra
+gradle -I gradle/support/fetchDependencies.gradle init
+# Create development build:
+gradle buildGhidra
 
-echo "${GDRA_ZIP} and OpenJDK 11 installed and ready to go!"
+set +x
