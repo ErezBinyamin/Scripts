@@ -5,7 +5,10 @@ set -x
 
 install_docker() {
 	# Install Docker
-	if ! which docker &>/dev/null
+	if which docker &>/dev/null
+	then
+		echo [COMPLETE] docker already installed!
+	elif echo "Kinetic Jammy Focal Bionic" | grep --ignore-case --quiet "$(lsb_release -cs)"
 	then
 		# Set up the repository
 		## 1. Update the apt package index and install packages to allow apt to use a repository over HTTPS:
@@ -45,7 +48,10 @@ install_docker() {
 		# Configure Docker to start on boot with systemd https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot-with-systemd
 		sudo systemctl enable docker.service
 		sudo systemctl enable containerd.service
+		echo [COMPLETE] docker installed!
 	else
+		curl -fsSL https://get.docker.com -o get-docker.sh
+		sudo sh get-docker.sh
 		echo [COMPLETE] docker installed!
 	fi
 
