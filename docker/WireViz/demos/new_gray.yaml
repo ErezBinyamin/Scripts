@@ -1,0 +1,70 @@
+templates:
+- &db9_connector
+    type: D-Sub
+    subtype: male
+    pinlabels: [TI+, TI-, S0+, S0-, GND, PWRH, PWRL, NC, RI]
+- &power_connector
+    type: Barrel
+    subtype: female
+    pinlabels: [VCC, GND]
+- &db9_cable
+    wirecount: 9
+    type: D-sub
+    gauge: 20 awg
+    show_equiv: true
+    colors: [YE,WH,BU,WH,BK,RD,RD,WH,BK]
+
+connectors:
+  NewGrayBox:
+    <<: *db9_connector
+    subtype: female
+  SplitterOUT_A:
+    <<: *db9_connector
+    subtype: female
+  SplitterOUT_B:
+    <<: *db9_connector
+    subtype: female
+  BlueBox:
+    <<: *db9_connector
+  PORTD:
+    <<: *db9_connector
+    pinlabels: [NC,NC,NC,NC,START,NC,NC,START,DATA]
+  PWRH:
+    <<: *power_connector
+  PWRL:
+    <<: *power_connector
+
+cables:
+  w1:
+    <<: *db9_cable
+  w2:
+    <<: *db9_cable
+  w3:
+    <<: *db9_cable
+    colors: [YE,WH,WH,WH,WH,RD,BK,RD,BK]
+
+connections:
+  -
+    - NewGrayBox: [1,2,3,4,5,6,7,8,9]
+    - w1: [1,2,3,4,5,6,7,8,9]
+    - SplitterOUT_A: [1,2,3,4,5,6,7,8,9]
+  -
+    - NewGrayBox: [1,2,3,4,5,6,7,8,9]
+    - w1: [1,2,3,4,5,6,7,8,9]
+    - SplitterOUT_B: [1,2,3,4,5,6,7,8,9]
+  -
+    - SplitterOUT_A: [1,2,3,4,5,6,7,8,9]
+    - w2: [1,2,3,4,5,6,7,8,9]
+    - BlueBox: [1,2,3,4,5,6,7,8,9]
+  -
+    - SplitterOUT_B: 1
+    - w3: 1
+    - PORTD: 9
+  -
+    - SplitterOUT_B: [6,9]
+    - w3: [6,7]
+    - PWRH: [1,2]
+  -
+    - SplitterOUT_B: [7,9]
+    - w3: [8,9]
+    - PWRL: [1,2]

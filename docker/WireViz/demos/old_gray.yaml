@@ -1,0 +1,93 @@
+templates:
+- &db15_connector
+    type: D-Sub
+    subtype: male
+- &db9_connector
+    type: D-Sub
+    subtype: male
+    pinlabels: [TI+, TI-, S0+, S0-, GND, PWRH, PWRL, NC, RI]
+- &power_connector
+    type: Barrel
+    subtype: female
+    pinlabels: [VCC, GND]
+- &power_cable
+    wirecount: 2
+    type: Power
+    gauge: 20 awg
+    show_equiv: true
+    colors: [RD, BK]
+- &db9_cable
+    wirecount: 9
+    type: D-sub
+    gauge: 20 awg
+    show_equiv: true
+    color_code: DIN
+- &db15_cable
+    wirecount: 15
+    type: S-sub
+    gauge: 20 awg
+    show_equiv: true
+    color_code: DIN
+
+connectors:
+  OldGrayPWR:
+    <<: *power_connector
+  OldGrayBox:
+    <<: *db15_connector
+    pinlabels: [NC, SO+, NC, TI+, NC, NC, EO, EO, NC, SO-, NC, TI-, NC, NC, E0]
+  OldGrayAdapter:
+    <<: *db15_connector
+    pinlabels: [NC, SO+, NC, TI+, NC, STRT, EO, STRT, NC, SO-, NC, TI-, NC, NC, E0]
+  PwrSwitch:
+    type: Serial
+    subtype: female
+    pinlabels: [A,B]
+  PWRPlug:
+    <<: *power_connector
+    subtype: male
+  PORTD:
+    <<: *db9_connector
+    pinlabels: [NC,NC,NC,NC,START,NC,NC,START,DATA]
+  BlueBox:
+    <<: *db9_connector
+
+cables:
+  w1:
+    <<: *db15_cable
+    colors: [BN]
+  w2:
+    wirecount: 2
+    type: Serial
+    gauge: 20 awg
+    show_equiv: true
+    colors: [OG,GY]
+  w3:
+    <<: *db9_cable
+    colors: [WH,WH,WH,WH,OG,WH,WH,GY,YE]
+  w4:
+    <<: *db9_cable
+    colors: [YE,GN,BU,PK,BK,WH,WH,WH,WH]
+  5vpwr:
+    <<: *power_cable
+
+connections:
+  -
+    - OldGrayBox: [2,4,7,10,12]
+    - w1: [2,4,7,10,12]
+    - OldGrayAdapter: [2,4,7,10,12]
+  -
+    - OldGrayPWR: [1-2]
+    - 5vpwr: [1-2]
+    - PWRPlug: [1-2]
+  -
+    - OldGrayAdapter: [6,8]
+    - w2: [1,2]
+    - PwrSwitch: [1,2]
+  -
+    - OldGrayAdapter: [6,8,4]
+    - w3: [5,8,9]
+    - PORTD: [5,8,9]
+  -
+    - OldGrayAdapter: [4,12,2,10,7]
+    - w4: [1,2,3,4,5]
+    - BlueBox: [1,2,3,4,5]

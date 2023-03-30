@@ -1,0 +1,11 @@
+# Standard ignores
+*.swp
+*.tmp
+*.ignore
+
+# Image outputs
+*.png
+*.tsv
+*.gv
+*.html
+*.svg
