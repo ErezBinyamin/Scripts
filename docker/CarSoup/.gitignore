@@ -1,0 +1,7 @@
+# Ignore .img_build
+.image_build
+
+# Generic ignores
+*.swp
+*.tmp
+*.ignore
