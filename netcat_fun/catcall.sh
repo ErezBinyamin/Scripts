@@ -1,4 +1,20 @@
 #!/bin/bash
+
+# Check if software exists on your computer.
+software_ok=0 # Zero good, one bad.
+for software in nc ffmpeg mplayer; do
+	which $software
+	has=$?
+	echo $has
+	if [ $has -ne "0" ]; then
+	 	echo "You need $software";
+   		software_ok=1
+	fi
+done
+if [ $software_ok -eq 1 ]; then
+	exit 1
+ fi
+
 # 1. Run catcall_connect <IP> <PORT> on CLIENT
 # 2. Run catcall_host <PORT> on SERVER
 
