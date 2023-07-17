@@ -1,60 +1,64 @@
 #!/bin/bash
 
-# Check if software exists on your computer.
-software_ok=0 # Zero good, one bad.
-for software in nc ffmpeg mplayer; do
-	which $software
-	has=$?
-	echo $has
-	if [ $has -ne "0" ]; then
-	 	echo "You need $software";
-   		software_ok=1
-	fi
+# Dependency check
+PACKAGES=()
+PACKAGES+=("nc")
+PACKAGES+=("ffmpeg")
+PACKAGES+=("mplayer")
+for pkg in ${PACKAGES[@]}
+do
+  if ! dpkg -S $pkg &>/dev/null && ! which $pkg &>/dev/null
+  then
+    echo [ERROR] MissingPackage: ${pkg}
+    exit 1
+  fi
 done
-if [ $software_ok -eq 1 ]; then
-	exit 1
- fi
 
-# 1. Run catcall_connect <IP> <PORT> on CLIENT
-# 2. Run catcall_host <PORT> on SERVER
-
-# Server will advertise on PORT
-# Serve audio and video on PORT+1
-catcall_host() (
-	local PORT=${1}
-	nc -l ${PORT} &
-	let PORT++
-	ffmpeg \
-		-f alsa -i hw:1 \
-		-acodec flac \
-		-f matroska \
-		-f video4linux2 -i /dev/video0 \
-		-vcodec mpeg4 \
-		-f matroska \
-		-tune zerolatency -y /dev/stdout \
-		2>/dev/null | nc -l ${PORT} | mplayer - &>/dev/null
+catcall() (
+  usage() {
+      printf "Host Usage: catcall <PORT>\nClient usage: catcall <IP_ADDR> <PORT>\n"
+  }
+  portAvail() {
+    netstat -awlpunt 2>/dev/null | grep -Eo ':[0-9]+ ' | tr -d ':' | sort -un | grep --quiet "${1}" && return 1 || return 0
+  }
+  local IP_ADDR PORT TRY NCCMD
+  case $# in
+    1)
+      if [[ ! ${1} =~ ^[0-9]+$ ]] || ! portAvail ${1}
+      then
+        usage && return 1
+      fi
+      PORT=${1}
+      nc -l ${PORT}
+      NCCMD="nc -l $((++PORT))"
+      ;;
+    2)
+      [[ ! ${2} =~ ^[0-9]+$ ]] && usage && return 1
+      IP_ADDR=${1}
+      PORT=${2}
+      printf "\nAwaiting ${IP_ADDR}:${PORT} to advertise connection:\n"
+      while ! nc -dz ${IP_ADDR} ${PORT} &>/dev/null
+      do
+      	[ $TRY -eq 0 ] && printf '.'
+      	TRY=$(((TRY + 1) % 2))
+        sleep 1
+      done
+      printf '\nCONNECTION ACHIEVED!\n'
+      NCCMD="nc ${IP_ADDR} $((++PORT))"
+      ;;
+    *)
+      usage
+      return 1
+      ;;
+  esac
+  ffmpeg \
+    -f alsa -i hw:1 \
+    -acodec flac \
+    -f matroska \
+    -f video4linux2 -i /dev/video0 \
+    -vcodec mpeg4 \
+    -f matroska \
+    -tune zerolatency -y /dev/stdout \
+    2>/dev/null | ${NCCMD} | mplayer -
 )
 
-# When server advertise PORT is up, connect audio and video
-catcall_connect() {
-	local IP_ADDR=${1}
-	local PORT=${2}
-	local TRY=0
-	printf "\nAwaiting ${IP_ADDR}:${PORT} to advertise connection:\n"
-	while ! nc -dzW 1 ${IP_ADDR} ${PORT} &>/dev/null
-	do
-		[ $TRY -eq 0 ] && printf '.'
-		TRY=$(((TRY + 1) % 100))
-	done
-	printf '\nCONNECTION ACHIEVED!\n'
-	let PORT++
-	ffmpeg \
-		-f alsa -i hw:1 \
-		-acodec flac \
-		-f matroska \
-		-f video4linux2 -i /dev/video0 \
-		-vcodec mpeg4 \
-		-f matroska \
-		-tune zerolatency -y /dev/stdout \
-		2>/dev/null | nc ${IP_ADDR} ${PORT} | mplayer - &>/dev/null
-}
