@@ -23,6 +23,8 @@ rootless_tcpdump() {
 
 	# Finally, use setcap to give tcpdump the necessary permissions:
 	sudo setcap cap_net_raw,cap_net_admin=eip ${BIN}
+	set +e
+	set +x
 }
 
 rootless_tcpdump $@
