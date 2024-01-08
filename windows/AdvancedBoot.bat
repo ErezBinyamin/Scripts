@@ -1,0 +1,3 @@
+@ECHO OFF
+COLOR A
+SHUTDOWN /r /o
