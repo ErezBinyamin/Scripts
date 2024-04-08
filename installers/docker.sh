@@ -48,7 +48,7 @@ install_docker() {
 	# DOCKER_IMAGES+=("frolvlad/alpine-python3")
 	# for dimage in ${DOCKER_IMAGES[$@]}
 	# do
-	# 	[[ "$(docker images -q ${dimage} 2> /dev/null)" == "" ]] && docker pull frolvlad/alpine-python2 || echo [COMPLETE] ${dimage}
+	# 	[[ "$(docker images -q ${dimage} 2> /dev/null)" == "" ]] && docker pull "${diamge}" || echo "[COMPLETE] ${dimage}"
 	# done
 }
 
