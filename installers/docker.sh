@@ -1,5 +1,4 @@
 #!/bin/bash
-# https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 export PS4='\033[0;33m$0:$LINENO [$?]+ \033[0m '
 set -x
 
@@ -23,6 +22,19 @@ install_docker() {
 
 		# 4. run the script either as root, or using sudo to perform the installation.
 		sudo sh install-docker.sh
+
+		# linux-postinstall: https://docs.docker.com/engine/install/linux-postinstall/
+		# Manage Docker as a non-root user
+		sudo groupadd docker
+		sudo usermod -aG docker $USER
+		newgrp docker
+		docker run hello-world
+
+		# Configure Docker to start on boot with systemd
+		sudo systemctl enable docker.service; sleep 2
+		sudo systemctl enable containerd.service; sleep 2
+		sudo systemctl disable docker.service; sleep 2
+		sudo systemctl disable containerd.service
 
 		echo [COMPLETE] docker installed!
 		popd
