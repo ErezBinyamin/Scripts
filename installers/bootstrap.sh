@@ -4,47 +4,34 @@ set -x
 
 bootstrap() {
 	# Update, upgrade, autoremove
-	sudo apt update
-	sudo apt dist-upgrade
-	sudo apt autoremove
+	sudo apt-get --yes update
+	sudo apt-get --yes dist-upgrade
+	sudo apt-get --yes autoremove
 
 	# Standard packages
 	PACKAGES=()
-	PACKAGES+=("ubuntu-restricted-extras")
-	PACKAGES+=("gnome-tweaks")
-	PACKAGES+=("laptop-mode-tools")
-	PACKAGES+=("curl")
-	PACKAGES+=("aria2")
-	PACKAGES+=("git")
-	PACKAGES+=("vim")
-	PACKAGES+=("xclip")
-	PACKAGES+=("kolourpaint")
+
+	# Meta-Packages
+	PACKAGES+=("net-tools" "build-essential" "xz-utils")
+
+	# Developer tools
+	PACKAGES+=("vim" "git" "git-lfs" "gcc" "make" "llvm")
+	PACKAGES+=("git-core" "zlib1g-dev" "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "libssl-dev" "libncurses5-dev" "libncursesw5-dev" "tk-dev" "libffi-dev" "liblzma-dev" "python-openssl")
+
+	# OS UX customization
+	PACKAGES+=("gnome-tweaks" "laptop-mode-tools")
+
+	# Good cli software
+	PACKAGES+=("xclip" "wget" "curl" "htop")
+
+	# Good gui software
+	PACKAGES+=("vlc" "usb-creator-gtk" "brave-browser")
+
+	# Do the installation
 	for pkg in ${PACKAGES[@]}
 	do
-		dpkg -s $pkg &>/dev/null || sudo apt install -y ${pkg} && echo [COMPLETE] ${pkg}
+		dpkg -s $pkg &>/dev/null || sudo apt install --yes ${pkg} && echo [COMPLETE] ${pkg}
 	done
-
-	# Snap install
-	PACKAGES=()
-	PACKAGES+=("vlc")
-	for pkg in ${PACKAGES[@]}
-	do
-		snap list | grep $pkg &>/dev/null || sudo snap install -y ${pkg} && echo [COMPLETE] ${pkg}
-	done
-
-	# Install virtual tools
-	PACKAGES=()
-	PACKAGES+=("qemu-kvm")
-	PACKAGES+=("libvirt-clients")
-	PACKAGES+=("libvirt-daemon-system")
-	PACKAGES+=("bridge-utils")
-	PACKAGES+=("virt-manager")
-	for pkg in ${PACKAGES[@]}
-	do
-		dpkg -s $pkg &>/dev/null || sudo apt install -y ${pkg} && echo [COMPLETE] ${pkg}
-	done
-
-	bash docker.sh
 }
 
 bootstrap $@
