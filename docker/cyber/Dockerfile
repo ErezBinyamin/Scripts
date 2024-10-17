@@ -21,11 +21,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     build-essential \
+    forensics-all \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Install additional Python packages for pentesting
 RUN pip3 install --no-cache-dir \
     pwntools \
+    chepy \
     requests
 
 # Optional: Install Metasploit
@@ -33,6 +35,7 @@ RUN pip3 install --no-cache-dir \
 
 # Clean up APT when done to reduce image size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt update
 
 # Set working directory
 WORKDIR /root
