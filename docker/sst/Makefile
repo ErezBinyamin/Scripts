@@ -1,11 +1,15 @@
-IMAGE_NAME=sst
+IMGAGE=sst
 DEPS=Dockerfile
 
 .PHONY: all
 all: .image_build
 .image_build: $(DEPS)
-	docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMGAGE) .
 	touch .image_build
 
 bash: all
-	docker run -it $(IMAGE_NAME)
+	docker run -it $(IMGAGE)
+
+clean:
+	docker image rm $(IMGAGE)
+	rm -f .image_build
